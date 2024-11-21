@@ -91,6 +91,7 @@ public final class IMAPServerHandler: ChannelDuplexHandler {
             context.write(self.wrapOutboundOut(self.continuationRequestBytes), promise: nil)
         }
         context.flush()
+        self.numberOfOutstandingContinuationRequests = 0
     }
 
     public func channelRead(context: ChannelHandlerContext, data: NIOAny) {
