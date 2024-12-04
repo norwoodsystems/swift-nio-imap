@@ -54,12 +54,12 @@ extension MailboxData {
         public var identifiers: [Int]
 
         /// The highest `ModificationSequence` of all messages that were found.
-        public var modificationSequence: ModificationSequenceValue
+        public var modificationSequence: ModificationSequenceValue?
 
         /// Creates a new `SearchSort`.
         /// - parameter identifiers: An array of message identifiers that were matched in a search.
         /// - parameter modificationSequence: The highest `ModificationSequence` of all messages that were found.
-        public init(identifiers: [Int], modificationSequence: ModificationSequenceValue) {
+        public init(identifiers: [Int], modificationSequence: ModificationSequenceValue?) {
             self.identifiers = identifiers
             self.modificationSequence = modificationSequence
         }
@@ -74,8 +74,11 @@ extension EncodeBuffer {
             + self.writeIfExists(data) { (data) -> Int in
                 self.writeArray(data.identifiers, prefix: " ", parenthesis: false) { (element, buffer) -> Int in
                     buffer.writeString("\(element)")
-                } + self.writeSpace() + self.writeString("(MODSEQ ")
-                    + self.writeModificationSequenceValue(data.modificationSequence) + self.writeString(")")
+                }
+                + (data.modificationSequence != nil ?
+                   self.writeSpace() + self.writeString("(MODSEQ ")
+                   + self.writeModificationSequenceValue(data.modificationSequence!) + self.writeString(")")
+                   : 0)
             }
     }
 
